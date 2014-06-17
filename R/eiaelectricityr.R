@@ -1,13 +1,19 @@
+#' @title eiaelectricityr
+#' @author Thomas Hopper <tomhopper@gmail.com>
+#' @name
+#' @description
+#' to rename countries to match map data,
+#' \enumerate{
+#'   \item{make sure that the country names are factors}
+#'   \item{set the country column name to "id"}
+#'   \item{set up a vector of name equivalencies}
+#'   \item{load the plyr package}
+#'   \item{apply the equivalency to the country name column}
+#' }
 
 #' TODO:
-#' 1) fix all data being saved as variable name "data.gen"
-#'    Split getEIA...():
-#'    a) "tmp <-" through "data.workbook <-" in function "getEIA...()"
-#'    b) "colnames..." through "rownames..." in function "mungeEIA...()"
-#'    c) getEIA...() returns the data frame data.workbook
-#'    d) mungeEIA...() returns the data frame data.gen
-#'    e) save all international data sets in one RDATA file.
-#'    f) save all u.s. data sets in a second RDATA file.
+#' a) More data sets from EIA
+#' b) Build package and test
 
 #library(ggplot2)
 #' requires plyr
@@ -189,19 +195,6 @@ if (require(plyr)) {
     int.data.list <- c("int.net.total.gen", "int.net.nonhydro.renewable.gen", "int.net.nuclear.gen", "int.net.fossil.gen", "int.net.hydro.gen", "int.net.renewable.gen", "int.net.pumped.hydro", "int.total.elect.consumption")
     save(list=int.data.list, file="data/eia_international.RDATA")
     #' 
-    #' @description
-    #' to rename countries to match map data,
-    #' \enumerate{
-    #'   \item{make sure that the country names are factors}
-    #'   \item{set the country column name to "id"}
-    #'   \item{set up a vector of name equivalencies}
-    #'   \item{load the plyr package}
-    #'   \item{apply the equivalency to the country name column}
-    #' }
-    #' @example
-    #' replacements <- c("iran" = "islamic republic of iran", "south korea" = "democratic peoples republic of korea")
-    #' data$id <- revalue(data$id, replacements)
-    #' @references
     #' \link{http://stackoverflow.com/questions/11810605/replace-contents-of-factor-column-in-r-dataframe}
   } else {
     stop("The 'XLConnect' package is required to process the Excel files downloaded from the DOE EIA. Please install it and then re-load eiaElectricityR.")
