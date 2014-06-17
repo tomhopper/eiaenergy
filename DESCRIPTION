@@ -1,0 +1,11 @@
+Package: eiaelectricityr
+Type: Package
+Title: Provides access to the U.S. DOE EIA's electricity data.
+Version: 1.0
+Date: 2014-06-12
+Author: Thomas Hopper
+Maintainer: Thomas Hopper <tomhopper@gmail.com>
+Description: Checks for the existence of specific files in the /raw-data/ folder. Any missing
+    files are downloaded, converted to data frames and then saved to the /data/ folder as
+    RDATA files.
+License: GPL-2, an open-source "copy-left" license
