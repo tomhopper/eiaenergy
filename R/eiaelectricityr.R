@@ -52,6 +52,7 @@ if (require(plyr)) {
     #' (or want to separate out into a separate data frame)
     us.by.month <- read.csv(file="data-raw/us_elect_gen_source_month.csv", header=TRUE, sep=",", dec=".", , quote="\"")
     us.by.month$YYYYMM <- as.character(us.by.month$YYYYMM)
+    us.by.year <- us.by.month[substr(us.by.month$YYYYMM, nchar(us.by.month$YYYYMM)-2+1, nchar(us.by.month$YYYYMM)) == "13",]
     us.by.month <- us.by.month[!substr(us.by.month$YYYYMM, nchar(us.by.month$YYYYMM)-2+1, nchar(us.by.month$YYYYMM)) == "13",]
     us.by.month$YYYYMM <- as.Date(paste(us.by.month$YYYYMM, "01", sep=""), "%Y%m%d")
     #' Generation Values in billions (10^9) kWh / month, includes "Not Available" values
@@ -66,7 +67,13 @@ if (require(plyr)) {
     #' Visual check of the results
     #ggplot(data = us.by.month, aes(x = YYYYMM, y = Value)) + geom_line() + facet_grid(facets=MSN~., scales="free_y")
     
-    save(us.by.month, file = "data/us_elect_gen_source_month.RData")
+    
+    us.by.year$YYYYMM <- as.numeric(substr(us.by.year$YYYYMM, start = 1, stop = nchar(us.by.year$YYYYMM)-2))
+    us.by.year$Value <- revalue(x=us.by.year$Value, replace=c("Not Available" = NA))
+    us.by.year$Value <- as.numeric(levels(us.by.year$Value))[us.by.year$Value]
+    comment(us.by.year) <- "Data available from link{http://www.eia.gov/electricity/data.cfm#summary}"
+    
+    save(list = c("us.by.month", "us.by.year"), file = "data/us_elect_gen_source.RData")
   }
   
   
