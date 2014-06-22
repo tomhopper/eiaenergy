@@ -80,7 +80,7 @@ if (require(plyr)) {
     us.by.year$Value <- as.numeric(levels(us.by.year$Value))[us.by.year$Value]
     comment(us.by.year) <- "Data available from link{http://www.eia.gov/electricity/data.cfm#summary}"
     
-    save(list = c("us.by.month", "us.by.year"), file = "data/us_elect_gen_source.RDATA")
+    save(list = c("us.by.month", "us.by.year"), file = "data/us_elect_gen_source.RData")
   }
   
   
@@ -194,7 +194,7 @@ if (require(plyr)) {
     
     #' Save RDATA file with all international data
     int.data.list <- c("int.net.total.gen", "int.net.nonhydro.renewable.gen", "int.net.nuclear.gen", "int.net.fossil.gen", "int.net.hydro.gen", "int.net.renewable.gen", "int.net.pumped.hydro", "int.total.elect.consumption")
-    save(list=int.data.list, file="data/eia_international.RDATA")
+    save(list=int.data.list, file="data/eia_international.RData")
     #' 
     #' \link{http://stackoverflow.com/questions/11810605/replace-contents-of-factor-column-in-r-dataframe}
   } else {
