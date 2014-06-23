@@ -36,6 +36,34 @@ mungeEIAInternationalData <- function(data.workbook, first.date, last.date) {
   return(eia.data)
 }
 
+get_dates <- function(uri) {
+  webpage <- suppressWarnings(readLines(uri))
+  #' get the line number containing the start of our select control
+  startline <- grep(pattern = "<select name=\\\"year1\\\"", x = webpage, value = FALSE)
+  #' start our search with the next line
+  current.line <- startline + 1
+  #' initialize years as a vector of integers
+  years <- c(NA_integer_)
+  #' grab each line until we reach the end of the select control.
+  #' note: if grep() does not find a match, it returns a vector of length == 0
+  while(length(grep(pattern = "</select>", x = webpage[current.line], value = FALSE)) == 0) {
+    #' get the number listed in the control
+    #' note: may not be robust if the HTML includes ">" and "<" that are not part of "option"
+    search.value <- as.numeric(sub(pattern = "^.*>(.*)<.*", replacement = "\\1", x = webpage[current.line]))
+    #' if the returned value is "NA," then we didn't find an option line
+    #' if the returned value is not "NA," then we have found a year. Add this as an element of "years."
+    if(!is.na(search.value)) {
+      years <- c(years, search.value)
+    }
+    #' increment current.line so we look at the next line
+    current.line <- current.line + 1
+  }
+  #' years[1] is NA, so strip out all NA.
+  years <- years[!is.na(years)]
+  #' sort years from low to high
+  years <- sort(x = years, decreasing = FALSE)
+  return(years)
+}
 
 if (require(plyr)) {
   
@@ -89,8 +117,9 @@ if (require(plyr)) {
     #' The URI for for net electricity generation by country data requires the begin and end dates.
     #' We also need this to name the data frame columns.
     #' As of June 2014, the maximum range is 1980 to 2012
-    first.date <- 1980
-    last.date <- 2012
+    years <- get_dates("http://www.eia.gov/cfapps/ipdbproject/IEDIndex3.cfm?tid=2&pid=2&aid=12")
+    first.date <- years[1]
+    last.date <- years[length(years)]
     #' @description
     #' Total net generation, by country, 1980 - 2012 (first and last available as of 2014-06-12)
     #' Interactive:
@@ -101,7 +130,7 @@ if (require(plyr)) {
     #' \link{http://www.eia.gov/cfapps/ipdbproject/iedindex3.cfm?tid=2&pid=2&aid=12&cid=regions,&syid=1980&eyid=2012&unit=BKWH}
     raw.file.name <- c("data-raw/int_net_total_gen.xls")
     if (!file.exists(raw.file.name)) {
-      data.URI <- "http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=2&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products="
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=2&pdid=&aid=12&cid=all&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=", sep="")
       data.workbook <- getEIAInternationalData(data.URI, raw.file.name) 
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.net.total.gen <- mungeEIAInternationalData(data.workbook, first.date, last.date)
@@ -113,7 +142,7 @@ if (require(plyr)) {
     #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=34&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=}
     raw.file.name <- c("data-raw/int_net_nonhydro_renewable_gen.xls")
     if (!file.exists(raw.file.name)) {
-      data.URI <- "http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=34&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products="
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=34&pdid=&aid=12&cid=all&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=", sep = "")
       data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.net.nonhydro.renewable.gen <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
@@ -125,7 +154,7 @@ if (require(plyr)) {
     #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=27&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=}
     raw.file.name <- c("data-raw/int_net_nuclear_gen.xls")
     if (!file.exists(raw.file.name)) {
-      data.URI <- "http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=27&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products="
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=27&pdid=&aid=12&cid=all&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=", sep = "")
       data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.net.nuclear.gen <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
@@ -137,7 +166,7 @@ if (require(plyr)) {
     #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=28&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=}
     raw.file.name <- c("data-raw/int_net_fossil_gen.xls")
     if (!file.exists(raw.file.name)) {
-      data.URI <- "http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=28&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products="
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=28&pdid=&aid=12&cid=all&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=", sep = "")
       data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.net.fossil.gen <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
@@ -149,7 +178,7 @@ if (require(plyr)) {
     #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=33&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=}
     raw.file.name <- c("data-raw/int_net_hydro_gen.xls")
     if (!file.exists(raw.file.name)) {
-      data.URI <- "http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=33&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products="
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=33&pdid=&aid=12&cid=all&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=", sep = "")
       data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.net.hydro.gen <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
@@ -161,7 +190,7 @@ if (require(plyr)) {
     #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=29&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=}
     raw.file.name <- c("data-raw/int_net_renewable_gen.xls")
     if (!file.exists(raw.file.name)) {
-      data.URI <- "http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=29&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products="
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=29&pdid=&aid=12&cid=all&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=", sep = "")
       data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.net.renewable.gen <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
@@ -173,7 +202,7 @@ if (require(plyr)) {
     #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=82&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=}
     raw.file.name <- c("data-raw/int_net_pumped_hydro.xls")
     if (!file.exists(raw.file.name)) {
-      data.URI <- "http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=82&pdid=&aid=12&cid=all&syid=1980&eyid=2012&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products="
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=82&pdid=&aid=12&cid=all&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=", sep = "")
       data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.net.pumped.hydro <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
@@ -183,10 +212,12 @@ if (require(plyr)) {
     #' \link{http://www.eia.gov/cfapps/ipdbproject/iedindex3.cfm?tid=2&pid=2&aid=2&cid=all,&syid=1980&eyid=2011&unit=BKWH}
     #' Download:
     #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=2&pdid=&aid=2&cid=all&syid=1980&eyid=2011&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=}
+    years <- get_dates("http://www.eia.gov/cfapps/ipdbproject/IEDIndex3.cfm?tid=2&pid=2&aid=2")
+    first.date <- years[1]
+    last.date <- years[length(years)]
     raw.file.name <- c("data-raw/int_total_elect_consumption.xls")
     if (!file.exists(raw.file.name)) {
-      data.URI <- "http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=2&pdid=&aid=2&cid=all&syid=1980&eyid=2011&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products="
-      last.date <- 2011
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=2&pid=2&pdid=&aid=2&cid=all&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=2&typeOfUnit=STDUNIT&unit=BKWH&products=", sep="")
       data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.total.elect.consumption <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
