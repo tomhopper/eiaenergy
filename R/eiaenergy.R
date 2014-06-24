@@ -1,5 +1,5 @@
 #' @title EIA Electricity Data
-#' @author Thomas Hopper <tomhopper@gmail.com>
+#' @author Thomas Hopper
 #' @import plyr
 #' @import XLConnect
 #' 
