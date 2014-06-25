@@ -1,4 +1,4 @@
-#' @title eiaelectricityr
+#' @title eiaenergy
 #' @author Thomas Hopper <tomhopper@gmail.com>
 #' @name
 #' @description

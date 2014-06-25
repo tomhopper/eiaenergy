@@ -1,7 +1,6 @@
 #' @title EIA Electricity Data
 #' @author Thomas Hopper
-#' @import plyr
-#' @import XLConnect
+#' @depends plyr, XLConnect
 #' 
 #' @format A data frame with variables:
 #' \describe{
