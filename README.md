@@ -2,6 +2,8 @@
 
 A package intended to provide easy access to the U.S. DOE EIA electricity data.
 
+Install from github with devtools::install_github("tomhopper/eiaenergy").
+
 If raw data files (/data-raw/) are missing, downloads the data, converts it to a data frame and saves the data frame for easy loading via data().
 
 Currently works with: 
