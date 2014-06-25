@@ -207,6 +207,30 @@ if (require(plyr)) {
       setMissingValue(data.workbook, c("--", "NA", "s"))
       int.net.pumped.hydro <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
     }
+    #' Total primary energy production
+    #' Interactive:
+    #' \link{http://www.eia.gov/cfapps/ipdbproject/iedindex3.cfm?tid=44&pid=44&aid=1&cid=all,&syid=1980&eyid=2012&unit=QBTU}
+    #' Excel download:
+    #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=44&pid=44&pdid=44&aid=1&cid=regions&syid=1980&eyid=2012&form=&defaultid=3&typeOfUnit=BTUUNIT&unit=QBTU&products=}
+    raw.file.name <- c("data-raw/int_total_energy_gen.xls")
+    if (!file.exists(raw.file.name)) {
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=44&pid=44&pdid=44&aid=1&cid=regions&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=3&typeOfUnit=BTUUNIT&unit=QBTU&products=", sep="")
+      data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
+      setMissingValue(data.workbook, c("--", "NA", "s"))
+      int.total.energy.gen <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
+    }
+    #' Total primary energy consumption
+    #' Interactive:
+    #' \link{http://www.eia.gov/cfapps/ipdbproject/iedindex3.cfm?tid=44&pid=44&aid=2&cid=regions&syid=1980&eyid=2012&unit=QBTU}
+    #' Excel download:
+    #' \link{http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=44&pid=44&pdid=44,45,46,47&aid=2&cid=regions&syid=1980&eyid=2012&form=&defaultid=3&typeOfUnit=BTUUNIT&unit=QBTU&products=}
+    raw.file.name <- c("data-raw/int_total_energy_con.xls")
+    if (!file.exists(raw.file.name)) {
+      data.URI <- paste("http://www.eia.gov/cfapps/ipdbproject/XMLinclude_3.cfm?tid=44&pid=44&pdid=44,45,46,47&aid=2&cid=regions&syid=", first.date, "&eyid=", last.date, "&form=&defaultid=3&typeOfUnit=BTUUNIT&unit=QBTU&products=", sep="")
+      data.workbook <- getEIAInternationalData(data.URI, raw.file.name)
+      setMissingValue(data.workbook, c("--", "NA", "s"))
+      int.total.energy.con <- mungeEIAInternationalData(data.workbook, first.date, last.date) 
+    }
     #' Total electric power consumption, all countries by year, 1980 - 2011
     #' Interactive:
     #' \link{http://www.eia.gov/cfapps/ipdbproject/iedindex3.cfm?tid=2&pid=2&aid=2&cid=all,&syid=1980&eyid=2011&unit=BKWH}
@@ -224,7 +248,7 @@ if (require(plyr)) {
     }
     
     #' Save RDATA file with all international data
-    int.data.list <- c("int.net.total.gen", "int.net.nonhydro.renewable.gen", "int.net.nuclear.gen", "int.net.fossil.gen", "int.net.hydro.gen", "int.net.renewable.gen", "int.net.pumped.hydro", "int.total.elect.consumption")
+    int.data.list <- c("int.net.total.gen", "int.net.nonhydro.renewable.gen", "int.net.nuclear.gen", "int.net.fossil.gen", "int.net.hydro.gen", "int.net.renewable.gen", "int.net.pumped.hydro", "int.total.elect.consumption", "int.total.energy.gen", "int.total.energy.con")
     save(list=int.data.list, file="data/eia_international.rdata")
     #' 
     #' \link{http://stackoverflow.com/questions/11810605/replace-contents-of-factor-column-in-r-dataframe}

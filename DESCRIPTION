@@ -8,7 +8,7 @@ Maintainer: Thomas Hopper <tomhopper@gmail.com>
 Description: Checks for the existence of specific files in the /raw-data/
     folder. Any missing files are downloaded, converted to data frames and then
     saved to the /data/ folder as RDATA files.
-License: GPL-2
+License: GPL-2 + file LICENSE
 Depends:
     plyr,
     XLConnect
