@@ -1,7 +1,7 @@
 Package: eiaenergy
 Type: Package
 Title: Provides access to the U.S. DOE EIA's electricity data.
-Version: 1.0
+Version: 0.1
 Date: 2014-06-12
 Author: Thomas Hopper
 Maintainer: Thomas Hopper <tomhopper@gmail.com>
