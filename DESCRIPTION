@@ -1,4 +1,4 @@
-Package: eiaenergyr
+Package: eiaenergy
 Type: Package
 Title: Provides access to the U.S. DOE EIA's electricity data.
 Version: 1.0
